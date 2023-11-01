@@ -41,14 +41,14 @@ contract Counter {
     }
 
     #[aztec(private)]
-      fn increment(owner: Field)  {
+    fn increment(owner: Field)  {
         let counters = storage.counters;
         counters.at(owner).add(1, owner);
     }
 
     unconstrained fn get_counter(owner: Field) -> Field {
-    let counters = storage.counters;
-    balance_utils::get_balance(counters.at(owner).set)
+        let counters = storage.counters;
+        balance_utils::get_balance(counters.at(owner).set)
     }
 
     unconstrained fn compute_note_hash_and_nullifier(
@@ -57,7 +57,7 @@ contract Counter {
     storage_slot: Field,
     preimage: [Field; VALUE_NOTE_LEN],
     ) -> [Field; 4] {
-    let note_header = NoteHeader::new(contract_address, nonce, storage_slot);
-    note_utils::compute_note_hash_and_nullifier(ValueNoteMethods, note_header, preimage)
+        let note_header = NoteHeader::new(contract_address, nonce, storage_slot);
+        note_utils::compute_note_hash_and_nullifier(ValueNoteMethods, note_header, preimage)
     }
 }
