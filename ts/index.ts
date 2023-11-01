@@ -5,6 +5,7 @@ import {
   generatePublicKey,
   GrumpkinScalar,
   SignerlessWallet,
+  CompleteAddress,
 } from "@aztec/aztec.js";
 
 async function main() {
@@ -18,6 +19,7 @@ async function main() {
   const headstart = 2n;
 
   const completeAddress = await pxe.registerAccount(encryptionKey, Fr.ZERO);
+  const randomAddress = await CompleteAddress.random();
   console.log("completeAddress", completeAddress);
 
   const tx = await CounterContract.deployWithPublicKey(
@@ -38,6 +40,10 @@ async function main() {
   console.log("count", count);
 
   await contract.methods.increment(completeAddress.address).send().wait();
+
+  // This call will fail because the PXE does not have a registered public key
+  // for the account to create encrypted notes for it.
+  // await contract.methods.increment(randomAddress.address).send().wait();
 
   let newCount = await contract.methods
     .get_counter(completeAddress.address)
