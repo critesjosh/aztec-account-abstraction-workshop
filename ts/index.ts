@@ -13,7 +13,7 @@ async function main() {
   const contract = await tx.deployed();
   const receipt = await tx.getReceipt();
 
-  console.log(receipt);
+  console.log("Deployment receipt: ", receipt);
 
   let interactionTx = await contract.methods
     .getPublicKey(
@@ -24,7 +24,7 @@ async function main() {
     .send()
     .wait();
 
-  console.log("interaction tx", interactionTx);
+  console.log("Interaction tx:", interactionTx);
 }
 
 main();
