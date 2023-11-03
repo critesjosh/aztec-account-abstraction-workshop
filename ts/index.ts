@@ -49,10 +49,10 @@ async function main() {
   console.log("deployed");
 
   if (contract.address) {
-    // const secretHash = await computeMessageSecretHash(secret);
-    // const note = new Note([secretHash]);
-    // const extendedNote = new ExtendedNote(note, contract.address, contract.address, new Fr(1), receipt.txHash);
-    // await pxe.addNote(extendedNote);
+    const secretHash = await computeMessageSecretHash(secret);
+    const note = new Note([secretHash]);
+    const extendedNote = new ExtendedNote(note, contract.address, contract.address, new Fr(1), receipt.txHash);
+    await pxe.addNote(extendedNote);
     return contract.address;
   }
 }
