@@ -1,4 +1,4 @@
-# Deploy the Counter contract
+# Deploy the Counter contract with access control
 
 ## Setup
 
@@ -15,3 +15,4 @@ These interactions are still not coming from an account contract. `msg_sender` i
 ## Counter.nr
 
 ## index.ts
+

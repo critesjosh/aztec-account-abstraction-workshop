@@ -101,5 +101,4 @@ contract Counter {
         } else {
             note_utils::compute_note_hash_and_nullifier(ValueNoteMethods, note_header, preimage)
         }
-    }
 }
