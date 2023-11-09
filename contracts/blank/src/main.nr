@@ -1,6 +1,5 @@
 contract Blank {
     use dep::aztec::{
-        abi,
         oracle::{
             get_public_key::get_public_key,
         },

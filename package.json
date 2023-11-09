@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "build": "yarn clean && tsc -b",
-    "compile": "aztec-cli compile contracts/counter --outdir ../artifacts --typescript ../artifacts && aztec-cli compile contracts/blank --outdir ../artifacts --typescript ../artifacts",
+    "compile": "aztec-cli compile contracts/blank --outdir ../artifacts --typescript ../artifacts",
     "clean": "rm -rf ./dest tsconfig.tsbuildinfo",
     "start": "yarn build && node ./dest/ts/index.js"
   },
