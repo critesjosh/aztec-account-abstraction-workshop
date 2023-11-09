@@ -18,7 +18,7 @@ async function main() {
   let interactionTx = await contract.methods
     .getPublicKey(
       BigInt(
-        "0x15701f0b6cf4d273aa0b4ecf2abbb028c1c0286ba7309a2f20b253f297e1908e"
+        "0x16efad912187aa8ef0dcc6ef4f3743ab327b06465d4d229943f2fe3f88b06ad9"
       )
     )
     .send()

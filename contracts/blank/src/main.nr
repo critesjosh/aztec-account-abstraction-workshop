@@ -16,7 +16,7 @@ contract Blank {
         address: Field,
     ) -> pub [Field; 2]{
         // Uncomment this function to make this function only callable by signerless wallets (no aztec contracts)
-        assert(context.msg_sender() == 0, "Only signerless wallets can call this function");
+        // assert(context.msg_sender() == 0, "Only signerless wallets can call this function");
         let pub_key = get_public_key(address);
         
         [pub_key.x, pub_key.y]
