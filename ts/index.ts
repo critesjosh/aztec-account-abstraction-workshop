@@ -7,6 +7,7 @@ async function main() {
   const pxe = createPXEClient("http://localhost:8080");
   const nonContractAccountWallet = new SignerlessWallet(pxe);
 
+  // Contract.deploy() takes 1 input, the wallet from which to send a TxExecutionRequest
   const tx = await BlankContract.deploy(nonContractAccountWallet).send({
     contractAddressSalt: salt,
   });

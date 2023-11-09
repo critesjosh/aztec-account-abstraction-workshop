@@ -32,11 +32,11 @@
   "debug": {
     "debugSymbols": [
       "eJyrVsrJT04syczPK1ayqq6tBQAz9wY7",
-      "eJzVkEEKgzAQRe8y6yCayYxJrlK6kNaCIFqqO8nda4uJxQaLFQpdZQLvD3/eAHV7KvqqbTqwAyDYwwDdtWgev64vbj3YVEDZnMfXCbhUdQk2c+KNyhDJTOQ46yzQSDFcyVR5XEn+gBukCTYaZ9S4owD1j6Xph6VHJpRGo78vzbHSrOQUYKbV4irIU8SBpOfqfN9q0pknkV5XR3wYr1nmZj6QN7rQ+wqzYk/mtHDBSVS01D6CuNTHSVTgeiR6wnrEbIs4dwc2XUm7"
+      "eJzVkEEKgzAQRe8y6yDGSSYZr1K6kNaCIFqqO8ndq8VEsMFihUJXmcD7w583QN1eir5qmw7yARDy0wDdvWimX9cXjx7yVEDZXMfXCbhVdQm5dOKNkoiaZ3KcrQw06hiuslR5XGX0AWfUM8wWF5TdWYD6x9L6h6VHJpRGtt+Xplhpw3IOWKk2i6sgT2kKpH6tNsdWa+tJmq5aVkd8sNecGV4OpJ0u7LHCpMgXNnrlgpKo6Mz6COJaHyVRgduR6AnbEd4Xce4JO9RJvg=="
     ],
     "fileMap": {
       "1": {
-        "source": "contract Blank {\n    use dep::aztec::{\n        oracle::{\n            get_public_key::get_public_key,\n        },\n    };\n\n    #[aztec(private)]\n    fn constructor() {}\n\n    // Anyone can call this function to get the public key of the specified address, provided it \n    // is available from the PXE via the oracle call\n    #[aztec(private)]\n    fn getPublicKey(\n        address: Field,\n    ) -> pub [Field; 2]{\n        // Uncomment this function to make this function only callable by signerless wallets (no aztec contracts)\n        // assert(context.msg_sender() == 0, \"Only signerless wallets can call this function\");\n        let pub_key = get_public_key(address);\n        \n        [pub_key.x, pub_key.y]\n    }\n}",
+        "source": "contract Blank {\n\n    // dependencies, from https://aztec.nr\n\n    use dep::aztec::{\n        oracle::{\n            get_public_key::get_public_key,\n            debug_log::debug_log\n        },\n    };\n\n    // This contract maintains no state, so is functionally usesless\n\n    #[aztec(private)]\n    fn constructor() {}\n\n    // Anyone can call this function to get the public key of the specified address, provided it \n    // is available from the PXE via the oracle call\n\n    #[aztec(private)]\n    fn getPublicKey(\n        address: Field,\n    ) -> pub [Field; 2]{\n        // Uncomment this function to make this function only callable by signerless wallets (no aztec contracts)\n        // assert(context.msg_sender() == 0, \"Only signerless wallets can call this function\");\n        let pub_key = get_public_key(address);\n        \n        [pub_key.x, pub_key.y]\n    }\n}",
         "path": "/home/josh/Documents/GitHub/aztec-account-abstraction-workshop/contracts/blank/src/main.nr"
       },
       "35": {
