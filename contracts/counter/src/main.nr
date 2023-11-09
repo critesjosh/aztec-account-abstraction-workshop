@@ -1,4 +1,9 @@
 contract Counter {
+
+    /*
+        Imports
+    */
+
     use dep::aztec::{
         context::{PrivateContext, Context},
         note::{
@@ -15,6 +20,10 @@ contract Counter {
             },
     };
     use dep::easy_private_state::easy_private_state::EasyPrivateUint;
+
+    /*
+        Storage declaration
+    */
 
     struct Storage {
         counters: Map<EasyPrivateUint>,
@@ -50,6 +59,10 @@ contract Counter {
         let counters = storage.counters;
         balance_utils::get_balance(counters.at(owner).set)
     }
+
+    /*
+        Required functions, only modified for custom note types
+    */
 
     unconstrained fn compute_note_hash_and_nullifier(
         contract_address: Field,
