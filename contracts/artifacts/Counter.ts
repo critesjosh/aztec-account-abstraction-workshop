@@ -55,14 +55,14 @@ export class CounterContract extends ContractBase {
   /**
    * Creates a tx to deploy a new instance of this contract.
    */
-  public static deploy(wallet: Wallet, headstart: (bigint | number), owner: FieldLike) {
+  public static deploy(wallet: Wallet, secret: FieldLike) {
     return new DeployMethod<CounterContract>(Point.ZERO, wallet, CounterContractArtifact, Array.from(arguments).slice(1));
   }
 
   /**
    * Creates a tx to deploy a new instance of this contract using the specified public key to derive the address.
    */
-  public static deployWithPublicKey(publicKey: PublicKey, wallet: Wallet, headstart: (bigint | number), owner: FieldLike) {
+  public static deployWithPublicKey(publicKey: PublicKey, wallet: Wallet, secret: FieldLike) {
     return new DeployMethod<CounterContract>(publicKey, wallet, CounterContractArtifact, Array.from(arguments).slice(2));
   }
   
@@ -82,10 +82,13 @@ export class CounterContract extends ContractBase {
     /** compute_note_hash_and_nullifier(contract_address: field, nonce: field, storage_slot: field, preimage: array) */
     compute_note_hash_and_nullifier: ((contract_address: FieldLike, nonce: FieldLike, storage_slot: FieldLike, preimage: FieldLike[]) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
+    /** get_constant() */
+    get_constant: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+
     /** get_counter(owner: field) */
     get_counter: ((owner: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
-    /** increment(owner: field) */
-    increment: ((owner: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** increment(owner: field, secret: field) */
+    increment: ((owner: FieldLike, secret: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
   };
 }

@@ -6,6 +6,13 @@ import {
   GrumpkinScalar,
   SignerlessWallet,
   CompleteAddress,
+  computeMessageSecretHash,
+  Note,
+  AztecAddress,
+  ExtendedNote,
+  getSchnorrAccount,
+  getUnsafeSchnorrWallet,
+  getContractDeploymentInfo,
 } from "@aztec/aztec.js";
 
 async function main() {
@@ -16,39 +23,69 @@ async function main() {
   const pxe = createPXEClient("http://localhost:8080");
   const nonContractAccountWallet = new SignerlessWallet(pxe);
 
-  const headstart = 2n;
+  const secret = Fr.random();
+  const deploymentInfo = await getContractDeploymentInfo(
+    CounterContract.artifact,
+    [secret],
+    salt,
+    publicKey
+  );
 
-  const completeAddress = await pxe.registerAccount(encryptionKey, Fr.ZERO);
-  const randomAddress = await CompleteAddress.random();
-  console.log("completeAddress", completeAddress);
+  await pxe.registerAccount(
+    encryptionKey,
+    deploymentInfo.completeAddress.partialAddress
+  );
+
+  const zeroAddress = Buffer.from(new Uint8Array(32).fill(0));
+  const someAddress = AztecAddress.random();
 
   const tx = await CounterContract.deployWithPublicKey(
     publicKey,
     nonContractAccountWallet,
-    headstart,
-    completeAddress.address
+    secret,
   ).send({ contractAddressSalt: salt });
-  const contract = await tx.deployed();
-  const receipt = await tx.getReceipt();
+  const contract = await tx.deployed({
+    debug: true
+  });
+  const receipt = await tx.wait({ debug: true });
+  // const receipt = await tx.getReceipt();
 
-  console.log("deployed");
+  console.log("deployed", receipt.debugInfo);
 
-  let count = await contract.methods
-    .get_counter(completeAddress.address)
+  if (contract.address) {
+    // const secretHash = await computeMessageSecretHash(secret);
+    const note = new Note([secret]);
+    const extendedNote = new ExtendedNote(note, contract.address, contract.address, new Fr(1), receipt.txHash);
+    console.log("adding note manually to pxe");
+    await pxe.addNote(extendedNote);
+  }
+
+  let constant = await contract.methods
+    .get_constant()
     .view();
+  console.log("constant", constant);
 
-  console.log("count", count);
-
-  await contract.methods.increment(completeAddress.address).send().wait();
-
-  // This call will fail because the PXE does not have a registered public key
-  // for the account to create encrypted notes for it.
-  // await contract.methods.increment(randomAddress.address).send().wait();
+  await contract.methods.increment(contract.address, secret).send().wait();
 
   let newCount = await contract.methods
-    .get_counter(completeAddress.address)
+    .get_counter(contract.address)
     .view();
 
+  console.log("new count", newCount);
+
+  // this fails with tx already exists?
+  // await contract.methods.increment(contract.address, secret).send().wait();
+
+  // newCount = await contract.methods
+  //   .get_counter(someAddress)
+  //   .view();
+  // console.log("new count", newCount);
+
+  await contract.methods.increment(contract.address, Fr.random()).send().wait();
+
+  newCount = await contract.methods
+    .get_counter(someAddress)
+    .view();
   console.log("new count", newCount);
 }
 
