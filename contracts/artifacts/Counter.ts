@@ -82,13 +82,16 @@ export class CounterContract extends ContractBase {
     /** compute_note_hash_and_nullifier(contract_address: field, nonce: field, storage_slot: field, preimage: array) */
     compute_note_hash_and_nullifier: ((contract_address: FieldLike, nonce: FieldLike, storage_slot: FieldLike, preimage: FieldLike[]) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
-    /** get_constant() */
-    get_constant: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
-
     /** get_counter(owner: field) */
     get_counter: ((owner: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
+    /** get_secret() */
+    get_secret: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+
     /** increment(owner: field, secret: field) */
     increment: ((owner: FieldLike, secret: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+
+    /** update_secret(secret: field, new_secret: field) */
+    update_secret: ((secret: FieldLike, new_secret: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
   };
 }

@@ -5,13 +5,9 @@ import {
   generatePublicKey,
   GrumpkinScalar,
   SignerlessWallet,
-  CompleteAddress,
-  computeMessageSecretHash,
   Note,
   AztecAddress,
   ExtendedNote,
-  getSchnorrAccount,
-  getUnsafeSchnorrWallet,
   getContractDeploymentInfo,
 } from "@aztec/aztec.js";
 
@@ -42,38 +38,52 @@ async function main() {
   const tx = await CounterContract.deployWithPublicKey(
     publicKey,
     nonContractAccountWallet,
-    secret,
+    secret
   ).send({ contractAddressSalt: salt });
   const contract = await tx.deployed({
-    debug: true
+    debug: false,
   });
-  const receipt = await tx.wait({ debug: true });
+  const receipt = await tx.wait({ debug: false });
   // const receipt = await tx.getReceipt();
 
   console.log("deployed", receipt.debugInfo);
 
-  if (contract.address) {
-    // const secretHash = await computeMessageSecretHash(secret);
-    const note = new Note([secret]);
-    const extendedNote = new ExtendedNote(note, contract.address, contract.address, new Fr(1), receipt.txHash);
-    console.log("adding note manually to pxe");
-    await pxe.addNote(extendedNote);
-  }
+  const note = new Note([secret]);
+  const extendedNote = new ExtendedNote(
+    note,
+    contract.address,
+    contract.address,
+    new Fr(1),
+    receipt.txHash
+  );
+  console.log("adding note manually to pxe");
+  await pxe.addNote(extendedNote);
 
-  let constant = await contract.methods
-    .get_constant()
-    .view();
-  console.log("constant", constant);
+  let constantSecret = await contract.methods.get_secret().view();
+  console.log("secret from contract: ", constantSecret);
 
-  await contract.methods.increment(contract.address, secret).send().wait();
+  let incrementReceipt = await contract.methods
+    .increment(contract.address, secret)
+    .send()
+    .wait();
 
-  let newCount = await contract.methods
-    .get_counter(contract.address)
-    .view();
+  let newCount = await contract.methods.get_counter(contract.address).view();
 
   console.log("new count", newCount);
 
+  const ns = new Note([secret]);
+  const nsen = new ExtendedNote(
+    ns,
+    contract.address,
+    contract.address,
+    new Fr(1),
+    incrementReceipt.txHash
+  );
+  console.log("adding note manually to pxe");
+  await pxe.addNote(nsen);
+
   // this fails with tx already exists?
+  // need to program a nonce into the tx entrypoint to make a unique hash
   // await contract.methods.increment(contract.address, secret).send().wait();
 
   // newCount = await contract.methods
@@ -81,12 +91,36 @@ async function main() {
   //   .view();
   // console.log("new count", newCount);
 
-  await contract.methods.increment(contract.address, Fr.random()).send().wait();
+  // This will fail with incorrect secret provided
+  // await contract.methods.increment(contract.address, Fr.random()).send().wait();
 
-  newCount = await contract.methods
-    .get_counter(someAddress)
-    .view();
-  console.log("new count", newCount);
+  const newSecret = Fr.random();
+
+  const upstateSecretReceipt = await contract.methods
+    .update_secret(secret, newSecret)
+    .send()
+    .wait({ debug: true });
+
+  const newSecretNote = new Note([newSecret]);
+  const newSecretExtendedNote = new ExtendedNote(
+    newSecretNote,
+    contract.address,
+    contract.address,
+    new Fr(1),
+    upstateSecretReceipt.txHash
+  );
+  console.log("adding note manually to pxe");
+  await pxe.addNote(newSecretExtendedNote);
+
+  let newConstantSecret = await contract.methods.get_secret().view();
+
+  console.log("New constant secret: ", newConstantSecret);
+
+  let finalCount = await contract.methods.get_counter(contract.address).view();
+  console.log("final count", finalCount);
+
+  let randomCount = await contract.methods.get_counter(someAddress).view();
+  console.log("random account count", randomCount);
 }
 
 main();
