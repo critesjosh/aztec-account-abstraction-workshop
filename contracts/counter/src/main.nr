@@ -12,9 +12,13 @@ contract Counter {
         },
         state_vars::{
             map::Map,
-            immutable_singleton::ImmutableSingleton,
             singleton::Singleton,
         },
+        oracle::debug_log::{
+            debug_log,
+            debug_log_field,
+            debug_log_format
+        }
     };
     use dep::value_note::{
             balance_utils,
@@ -36,12 +40,13 @@ contract Counter {
     */
 
     struct Storage {
+        // Whoever can produce this secret is able to 
         secret: Singleton<FieldNote, FIELD_NOTE_LEN>,
         counters: Map<EasyPrivateUint>,
     }
 
     impl Storage {
-        fn init(context: Context) -> pub Self {
+        fn init(context: Context) -> Self {
             Storage {
                 secret: Singleton::new(context, 1, FieldNoteMethods),
                 counters: Map::new(
@@ -60,16 +65,9 @@ contract Counter {
         let mut note = FieldNote::new(secret);
         storage.secret.initialize(
             &mut note,
-            Option::some(context.this_address()),
-            // Option::none(),
+            Option::some(context.this_address()), // owner of the note, this is `this` bc the contract is being used as an "account"
             false
         );
-    }
-
-    unconstrained fn get_constant() -> Field {
-        let secret_note = storage.secret.view_note();
-        secret_note.value
-        // storage.secret.is_initialized(Option::none())
     }
 
     #[aztec(private)]
@@ -78,6 +76,20 @@ contract Counter {
         assert(secret_note.value == secret);
         let counters = storage.counters;
         counters.at(owner).add(1, owner);
+    }
+
+    #[aztec(private)]
+    fn update_secret(secret: Field, new_secret: Field) {
+        assert(storage.secret.get_note(false).value == secret);
+        let mut note = FieldNote::new(new_secret);
+        storage.secret.replace(&mut note, false);
+        debug_log_format("secret: {0}, newSecret: {1}", [secret, new_secret]);
+    }
+
+    unconstrained fn get_secret() -> Field {
+        let secret_note = storage.secret.view_note();
+        debug_log_format("secret: {0}", [secret_note.value]);
+        secret_note.value
     }
 
     unconstrained fn get_counter(owner: Field) -> Field {
@@ -101,4 +113,5 @@ contract Counter {
         } else {
             note_utils::compute_note_hash_and_nullifier(ValueNoteMethods, note_header, preimage)
         }
+    }
 }
