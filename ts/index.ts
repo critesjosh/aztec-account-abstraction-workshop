@@ -12,14 +12,27 @@ import {
 } from "@aztec/aztec.js";
 
 async function main() {
-  const salt = Fr.random();
+  /*
+
+  Setup
+
+  */
+
+  // this will be used to encrypt private notes to a specific account
   const encryptionKey = GrumpkinScalar.random();
   const publicKey = await generatePublicKey(encryptionKey);
 
   const pxe = createPXEClient("http://localhost:8080");
   const nonContractAccountWallet = new SignerlessWallet(pxe);
 
+  // this will be used for access control on the account contract
   const secret = Fr.random();
+  // deployment salt is an input to determine the contract address
+  const salt = Fr.random();
+
+  // contract deployment info is deterministic
+  // get the deployment info to register the to be deployed account contract
+  // with the PXE
   const deploymentInfo = await getContractDeploymentInfo(
     CounterContract.artifact,
     [secret],
@@ -32,8 +45,11 @@ async function main() {
     deploymentInfo.completeAddress.partialAddress
   );
 
-  const zeroAddress = Buffer.from(new Uint8Array(32).fill(0));
-  const someAddress = AztecAddress.random();
+  /*
+
+  Deploy
+
+  */
 
   const tx = await CounterContract.deployWithPublicKey(
     publicKey,
@@ -43,10 +59,16 @@ async function main() {
   const contract = await tx.deployed({
     debug: false,
   });
-  const receipt = await tx.wait({ debug: false });
+  const receipt = await tx.wait({ debug: true });
   // const receipt = await tx.getReceipt();
 
   console.log("deployed", receipt.debugInfo);
+
+  /*
+
+  Add note to PXE
+
+  */
 
   const note = new Note([secret]);
   const extendedNote = new ExtendedNote(
@@ -62,6 +84,12 @@ async function main() {
   let constantSecret = await contract.methods.get_secret().view();
   console.log("secret from contract: ", constantSecret);
 
+  /*
+
+    Increment the protected counter
+
+  */
+
   let incrementReceipt = await contract.methods
     .increment(contract.address, secret)
     .send()
@@ -71,18 +99,7 @@ async function main() {
 
   console.log("new count", newCount);
 
-  const ns = new Note([secret]);
-  const nsen = new ExtendedNote(
-    ns,
-    contract.address,
-    contract.address,
-    new Fr(1),
-    incrementReceipt.txHash
-  );
-  console.log("adding note manually to pxe");
-  await pxe.addNote(nsen);
-
-  // this fails with tx already exists?
+  // this fails with tx already exists
   // need to program a nonce into the tx entrypoint to make a unique hash
   // await contract.methods.increment(contract.address, secret).send().wait();
 
@@ -94,31 +111,41 @@ async function main() {
   // This will fail with incorrect secret provided
   // await contract.methods.increment(contract.address, Fr.random()).send().wait();
 
-  const newSecret = Fr.random();
+  /*
 
-  const upstateSecretReceipt = await contract.methods
-    .update_secret(secret, newSecret)
-    .send()
-    .wait({ debug: true });
+    Update the secret used for access control
+    
+  */
 
-  const newSecretNote = new Note([newSecret]);
-  const newSecretExtendedNote = new ExtendedNote(
-    newSecretNote,
-    contract.address,
-    contract.address,
-    new Fr(1),
-    upstateSecretReceipt.txHash
-  );
-  console.log("adding note manually to pxe");
-  await pxe.addNote(newSecretExtendedNote);
+  // const newSecret = Fr.random();
 
-  let newConstantSecret = await contract.methods.get_secret().view();
+  // const upstateSecretReceipt = await contract.methods
+  //   .update_secret(secret, newSecret)
+  //   .send()
+  //   .wait({ debug: true });
 
-  console.log("New constant secret: ", newConstantSecret);
+  // const newSecretNote = new Note([newSecret]);
+  // const newSecretExtendedNote = new ExtendedNote(
+  //   newSecretNote,
+  //   contract.address,
+  //   contract.address,
+  //   new Fr(1),
+  //   upstateSecretReceipt.txHash
+  // );
+  // console.log("adding note manually to pxe");
+  // await pxe.addNote(newSecretExtendedNote);
+
+  // let newConstantSecret = await contract.methods.get_secret().view();
+
+  // console.log("New constant secret: ", newConstantSecret);
+
+  // ===================================================================
 
   let finalCount = await contract.methods.get_counter(contract.address).view();
   console.log("final count", finalCount);
 
+  // log the count on a random address
+  const someAddress = AztecAddress.random();
   let randomCount = await contract.methods.get_counter(someAddress).view();
   console.log("random account count", randomCount);
 }
