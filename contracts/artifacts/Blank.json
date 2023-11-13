@@ -32,11 +32,11 @@
   "debug": {
     "debugSymbols": [
       "eJyrVsrJT04syczPK1ayqq6tBQAz9wY7",
-      "eJzVkEEKgzAQRe8y6yDGSSYZr1K6kNaCIFqqO8ndq8VEsMFihUJXmcD7w583QN1eir5qmw7yARDy0wDdvWimX9cXjx7yVEDZXMfXCbhVdQm5dOKNkoiaZ3KcrQw06hiuslR5XGX0AWfUM8wWF5TdWYD6x9L6h6VHJpRGtt+Xplhpw3IOWKk2i6sgT2kKpH6tNsdWa+tJmq5aVkd8sNecGV4OpJ0u7LHCpMgXNnrlgpKo6Mz6COJaHyVRgduR6AnbEd4Xce4JO9RJvg=="
+      "eJzVkMEKgzAMQP8l5yK2aWPjr4wdZHMgiI7pTfrv02EruOJwwmAnK7yElzdA3V6KvmqbDvIBEPLTAN29aKa/ri8ePeSpgLK5jl8n4FbVJeTSiTdKIhqeyfFtZaDRxHCtUu1xregDzmhmmC0uKLuzAP2P0uaH0iMTpJHt99IUk7apl7GoNsV1iKcNBdK8VmfHVhsrZ5Kmq5bVkR7sM6uMlwNpZwt7TJg0eeHMrFpQEg2trB9BXOejJBpweyR6wvYI7xtx7gk7xUm+"
     ],
     "fileMap": {
       "1": {
-        "source": "contract Blank {\n\n    // dependencies, from https://aztec.nr\n\n    use dep::aztec::{\n        oracle::{\n            get_public_key::get_public_key,\n            debug_log::debug_log\n        },\n    };\n\n    // This contract maintains no state, so is functionally usesless\n\n    #[aztec(private)]\n    fn constructor() {}\n\n    // Anyone can call this function to get the public key of the specified address, provided it \n    // is available from the PXE via the oracle call\n\n    #[aztec(private)]\n    fn getPublicKey(\n        address: Field,\n    ) -> pub [Field; 2]{\n        // Uncomment this function to make this function only callable by signerless wallets (no aztec contracts)\n        // assert(context.msg_sender() == 0, \"Only signerless wallets can call this function\");\n        let pub_key = get_public_key(address);\n        \n        [pub_key.x, pub_key.y]\n    }\n}",
+        "source": "contract Blank {\n\n    /*\n    \n     dependencies, from https://aztec.nr\n\n    */\n\n    use dep::aztec::{\n        oracle::{\n            get_public_key::get_public_key,\n            debug_log::debug_log\n        },\n    };\n\n    // This contract maintains no state, so is functionally usesless\n\n    #[aztec(private)]\n    fn constructor() {}\n\n    // Anyone can call this function to get the public key of the specified address, provided it \n    // is available from the PXE via the oracle call\n\n    #[aztec(private)]\n    fn getPublicKey(\n        address: Field,\n    ) -> pub [Field; 2]{\n        // Uncomment this function to make this function only callable by signerless wallets (no aztec contracts)\n        // assert(context.msg_sender() == 0, \"Only signerless wallets can call this function\");\n        let pub_key = get_public_key(address);\n        \n        [pub_key.x, pub_key.y]\n    }\n}",
         "path": "/home/josh/Documents/GitHub/aztec-account-abstraction-workshop/contracts/blank/src/main.nr"
       },
       "35": {
@@ -57,5 +57,5 @@
       }
     }
   },
-  "aztecNrVersion": "aztec-packages-v0.13.1"
+  "aztecNrVersion": "aztec-packages-v0.14.2"
 }

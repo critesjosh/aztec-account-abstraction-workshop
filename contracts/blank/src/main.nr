@@ -1,6 +1,10 @@
 contract Blank {
 
-    // dependencies, from https://aztec.nr
+    /*
+    
+    Dependencies, from https://aztec.nr
+
+    */
 
     use dep::aztec::{
         oracle::{

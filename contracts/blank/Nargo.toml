@@ -1,8 +1,8 @@
 [package]
 name = "blank"
 authors = [""]
-compiler_version = "0.18"
+compiler_version = ">=0.18"
 type = "contract"
 
 [dependencies]
-aztec = { git="https://github.com/AztecProtocol/aztec-packages/", tag="aztec-packages-v0.13.1", directory="yarn-project/aztec-nr/aztec" }
+aztec = { git="https://github.com/AztecProtocol/aztec-packages/", tag="aztec-packages-v0.14.2", directory="yarn-project/aztec-nr/aztec" }
