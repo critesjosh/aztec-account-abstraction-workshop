@@ -9,7 +9,11 @@ import {
 } from "@aztec/aztec.js";
 
 async function main() {
-  const salt = Fr.random();
+  /*
+
+  Setup
+
+  */
   const encryptionKey = GrumpkinScalar.random();
   const publicKey = await generatePublicKey(encryptionKey);
 
@@ -18,10 +22,17 @@ async function main() {
 
   const headstart = 2n;
 
+  // Register the account with the PXE, so the PXE can decrypt its notes
   const completeAddress = await pxe.registerAccount(encryptionKey, Fr.ZERO);
-  const randomAddress = await CompleteAddress.random();
   console.log("completeAddress", completeAddress);
 
+  /*
+
+  Deploy the Counter from the Signerless wallet
+
+  */
+
+  const salt = Fr.random();
   const tx = await CounterContract.deployWithPublicKey(
     publicKey,
     nonContractAccountWallet,
@@ -33,17 +44,41 @@ async function main() {
 
   console.log("deployed");
 
+  /*
+
+    Read the counter value
+
+  */
+
   let count = await contract.methods
     .get_counter(completeAddress.address)
     .view();
 
   console.log("count", count);
 
-  await contract.methods.increment(completeAddress.address).send().wait();
+  /*
+
+    Increment the counter for the registered account
+
+  */
+
+  let incrementRx = await contract.methods
+    .increment(completeAddress.address)
+    .send()
+    .wait();
+
+  console.log("increment receipt", incrementRx);
 
   // This call will fail because the PXE does not have a registered public key
   // for the account to create encrypted notes for it.
+  // const randomAddress = await CompleteAddress.random();
   // await contract.methods.increment(randomAddress.address).send().wait();
+
+  /*
+
+    Read the new count
+  
+  */
 
   let newCount = await contract.methods
     .get_counter(completeAddress.address)
