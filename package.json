@@ -6,17 +6,17 @@
   "type": "module",
   "scripts": {
     "build": "yarn clean && tsc -b",
-    "compile": "aztec-cli compile contracts/counter --outdir ../artifacts --typescript ../artifacts",
     "clean": "rm -rf ./dest tsconfig.tsbuildinfo",
+    "compile": "cd contracts/counter && aztec-nargo compile",
+    "codegen": "aztec-cli codegen contracts/counter/target -o contracts/artifacts --ts",
     "start": "yarn build && node ./dest/ts/index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aztec/aztec.js": "0.14.2",
-    "@aztec/circuits.js": "0.14.2",
-    "@aztec/cli": "0.14.2",
-    "@aztec/types": "0.14.2",
+    "@aztec/aztec.js": "0.23.0",
+    "@aztec/circuits.js": "0.23.0",
+    "@aztec/types": "0.23.0",
     "@types/node": "^20.8.10",
     "typescript": "^5.2.2"
   }

@@ -8,7 +8,7 @@ import {
   Note,
   AztecAddress,
   ExtendedNote,
-  getContractDeploymentInfo,
+  getContractInstanceFromDeployParams,
 } from "@aztec/aztec.js";
 
 async function main() {
@@ -33,16 +33,18 @@ async function main() {
   // contract deployment info is deterministic
   // get the deployment info to register the to be deployed account contract
   // with the PXE
-  const deploymentInfo = await getContractDeploymentInfo(
+  const deploymentInfo = await getContractInstanceFromDeployParams(
     CounterContract.artifact,
     [secret],
     salt,
     publicKey
   );
 
+  // let extendendContractData = await pxe.getExtendedContractData(deploymentInfo.)
+
   await pxe.registerAccount(
     encryptionKey,
-    deploymentInfo.completeAddress.partialAddress
+    deploymentInfo.initializationHash
   );
 
   /*

@@ -1,12 +1,11 @@
-
 [package]
 name = "counter_contract"
-authors = [""]
-compiler_version = ">=0.18.0"
 type = "contract"
+authors = [ "" ]
+compiler_version = ">=0.18.0"
 
 [dependencies]
-aztec = { git = 'https://github.com/AztecProtocol/aztec-packages/', tag = 'aztec-packages-v0.14.2', directory = 'yarn-project/aztec-nr/aztec' }
-value_note = { git = 'https://github.com/AztecProtocol/aztec-packages/', tag = 'aztec-packages-v0.14.2', directory = 'yarn-project/aztec-nr/value-note' }
-easy_private_state = { git = 'https://github.com/AztecProtocol/aztec-packages/', tag = 'aztec-packages-v0.14.2', directory = 'yarn-project/aztec-nr/easy-private-state' }
-field_note = { git="https://github.com/AztecProtocol/aztec-packages/", tag="aztec-packages-v0.14.2", directory="yarn-project/aztec-nr/field-note"}
+aztec = { git = "https://github.com/AztecProtocol/aztec-packages/", tag = "aztec-packages-v0.23.0", directory = "yarn-project/aztec-nr/aztec" }
+value_note = { git = "https://github.com/AztecProtocol/aztec-packages/", tag = "aztec-packages-v0.23.0", directory = "yarn-project/aztec-nr/value-note" }
+easy_private_state = { git = "https://github.com/AztecProtocol/aztec-packages/", tag = "aztec-packages-v0.23.0", directory = "yarn-project/aztec-nr/easy-private-state" }
+field_note = { git = "https://github.com/AztecProtocol/aztec-packages/", tag = "aztec-packages-v0.23.0", directory = "yarn-project/aztec-nr/field-note"}

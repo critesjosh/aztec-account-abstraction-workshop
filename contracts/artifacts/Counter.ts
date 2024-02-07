@@ -10,18 +10,23 @@ import {
   ContractArtifact,
   ContractBase,
   ContractFunctionInteraction,
+  ContractInstanceWithAddress,
   ContractMethod,
   DeployMethod,
   EthAddress,
   EthAddressLike,
   FieldLike,
   Fr,
+  FunctionSelectorLike,
+  loadContractArtifact,
+  NoirCompiledContract,
   Point,
   PublicKey,
   Wallet,
+  WrappedFieldLike,
 } from '@aztec/aztec.js';
-import CounterContractArtifactJson from './Counter.json' assert { type: 'json' };
-export const CounterContractArtifact = CounterContractArtifactJson as ContractArtifact;
+import CounterContractArtifactJson from '../counter/target/counter_contract-Counter.json' assert { type: 'json' };
+export const CounterContractArtifact = loadContractArtifact(CounterContractArtifactJson as NoirCompiledContract);
 
 /**
  * Type-safe interface for contract Counter;
@@ -29,11 +34,10 @@ export const CounterContractArtifact = CounterContractArtifactJson as ContractAr
 export class CounterContract extends ContractBase {
   
   private constructor(
-    completeAddress: CompleteAddress,
+    instance: ContractInstanceWithAddress,
     wallet: Wallet,
-    portalContract = EthAddress.ZERO
   ) {
-    super(completeAddress, CounterContractArtifact, wallet, portalContract);
+    super(instance, CounterContractArtifact, wallet);
   }
   
 
@@ -56,14 +60,14 @@ export class CounterContract extends ContractBase {
    * Creates a tx to deploy a new instance of this contract.
    */
   public static deploy(wallet: Wallet, secret: FieldLike) {
-    return new DeployMethod<CounterContract>(Point.ZERO, wallet, CounterContractArtifact, Array.from(arguments).slice(1));
+    return new DeployMethod<CounterContract>(Point.ZERO, wallet, CounterContractArtifact, CounterContract.at, Array.from(arguments).slice(1));
   }
 
   /**
    * Creates a tx to deploy a new instance of this contract using the specified public key to derive the address.
    */
   public static deployWithPublicKey(publicKey: PublicKey, wallet: Wallet, secret: FieldLike) {
-    return new DeployMethod<CounterContract>(publicKey, wallet, CounterContractArtifact, Array.from(arguments).slice(2));
+    return new DeployMethod<CounterContract>(publicKey, wallet, CounterContractArtifact, CounterContract.at, Array.from(arguments).slice(2));
   }
   
 
@@ -79,19 +83,22 @@ export class CounterContract extends ContractBase {
   /** Type-safe wrappers for the public methods exposed by the contract. */
   public methods!: {
     
-    /** compute_note_hash_and_nullifier(contract_address: field, nonce: field, storage_slot: field, preimage: array) */
-    compute_note_hash_and_nullifier: ((contract_address: FieldLike, nonce: FieldLike, storage_slot: FieldLike, preimage: FieldLike[]) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** constructor(secret: field) */
+    constructor: ((secret: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
-    /** get_counter(owner: field) */
-    get_counter: ((owner: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** increment(owner: struct, secret: field) */
+    increment: ((owner: AztecAddressLike, secret: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+
+    /** update_secret(secret: field, new_secret: field) */
+    update_secret: ((secret: FieldLike, new_secret: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
     /** get_secret() */
     get_secret: (() => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
-    /** increment(owner: field, secret: field) */
-    increment: ((owner: FieldLike, secret: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** get_counter(owner: struct) */
+    get_counter: ((owner: AztecAddressLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
 
-    /** update_secret(secret: field, new_secret: field) */
-    update_secret: ((secret: FieldLike, new_secret: FieldLike) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
+    /** compute_note_hash_and_nullifier(contract_address: struct, nonce: field, storage_slot: field, serialized_note: array) */
+    compute_note_hash_and_nullifier: ((contract_address: AztecAddressLike, nonce: FieldLike, storage_slot: FieldLike, serialized_note: FieldLike[]) => ContractFunctionInteraction) & Pick<ContractMethod, 'selector'>;
   };
 }
