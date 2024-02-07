@@ -1,3 +1,4 @@
+import { computePartialAddress } from "@aztec/circuits.js";
 import { CounterContract } from "../contracts/artifacts/Counter.js";
 import {
   Fr,
@@ -9,6 +10,7 @@ import {
   AztecAddress,
   ExtendedNote,
   getContractInstanceFromDeployParams,
+  CompleteAddress,
 } from "@aztec/aztec.js";
 
 async function main() {
@@ -40,11 +42,12 @@ async function main() {
     publicKey
   );
 
+
   // let extendendContractData = await pxe.getExtendedContractData(deploymentInfo.)
 
   await pxe.registerAccount(
     encryptionKey,
-    deploymentInfo.initializationHash
+    computePartialAddress(deploymentInfo)
   );
 
   /*
