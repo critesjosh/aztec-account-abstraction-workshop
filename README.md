@@ -1,5 +1,7 @@
 # Deploy the Counter contract with access control
 
+⚠️ The `master` branch should work, but the other branches are outdated. Some of the details in this README may be out of date as well. This repo was originally created for a workshop at Devconnect 2023.
+
 Additional notes in the hackmd [here](https://hackmd.io/WyJlswYJTEmWFjEolGNiww).
 
 The `master` branch is the third step, most complete branch of the workshop.
